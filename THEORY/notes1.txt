@@ -1,0 +1,60 @@
+Data lakes --> place to dump all information (even if irrelevant at the moment)
+         |---> therefore we can perform data discovery in the future
+         
+Data Warehouse pipelines are far simpler
+	    
+	    
+Data Science projects spann 3 different areas:
+	- Business knowledge (Domain)
+	- Data Management
+	- Data analysis 
+	
+CRISP-DM methodology is too high level and general, it doesn't provide a way to avoid bad practices.
+
+
+The step from Data Management (SQL) to Data analysis (Python) spawns a host of bad practices and side effects (The damn notebook):
+	
+			NO COMMON BACKBONE (CODE/DATA)
+
+
+That's why we operationalized and automated data science pipelines through DataOps/MLOps practices.
+We want QUALITY DELIVERIES, WITH SHORT CYCLE TIME. DevOps would be great but its too centered around software and data doesn't have any spot at all. That is way DataOps was born.
+
+DataOps: has 2 parts, the Data (development/experimentation) and the operations envrionment. Both sides are divided in different backbones:
+
+
+
+	Data Management 	Data Analysis
+	    Backbone		    Backbone
+	    
+	    	   Data Governance
+	    	   
+	    	   
+DATA MANAGEMENT BACKBONE 💾️
+
+There are 2 phases of data management: DATA INGESTION 🤤️ and DATA STORAGE 💾️. In the data ingestion phase data is extracted from Filesystem, REST API's, the internet... basically extracting data to the temporary landing zone -> persistent landing.
+
+After this ingestion, the storage comes into place with 3 different well delimited zones:
+	- Formatted zone: data engineering
+	- Trusted zone:
+	- Explotaition zone: is the final tables for the analysts that will be used for Modeling.
+	
+DATA GOVERNANCE (metadata artifacts) 🧑‍⚖️️	
+Control of decisions and metadatas of how data is in the state it is. There are Data Quality Rules, Mappings, Data Sources Registries, ProcessedFiles, Data Collection sources...
+
+
+
+TOOLS FOR DATA MANAGEMENT 
+- Ingestion: 
+	  |----> Scripting: Java, Python, Bash Scripts
+	  |----> Tools: Kafka, Spark
+	  
+- Storage: Distributed 
+	|---->
+	|---->
+
+- Data Quality & Profiling: 
+	|---->
+	|---->
+	
+

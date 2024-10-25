@@ -1,0 +1,15 @@
+Milestones (tentative, to guarantee a smooth progress)
+[Week 1] Project presentation - Part I. Create your team for the project (2 people).
+[Week 2] Read the project document in detail and choose the datasets and the data analysis you would like to conduct (scope of the project). Access the sources, explore them and perform basic data description to check what data is available and its initial data quality. After this step, you need to understand the datasets and be sure they can be joined / crossed and they provide a baseline to conduct a meaningful analysis. Load them in your landing zone (temporal landing). 
+[Week 3] Devise the data management backbone with small pieces of code. Decide the technologies you want to use and decide how they will interconnect. You may need start prototyping and trying connections to databases, frameworks, etc. just to be sure your proposal is feasible.
+[Week 4] Choose a small piece of data from one of the data sources and prototype the landing zone, formatted and trusted zone, end to end.
+[Week 5] Extract the data from the other data sources and propagate them through the landing, formatted and trusted zone. Include now the exploitation zone, integrating the data from your sources.
+[Week 7] First deliverable of the project ready: the complete data management backbone including operations (i.e., generate the python codes and glue them with your own code to generate the software artifact to put into operations).
+[Week 10] Project presentation - Part II
+[Week 12] You should have a first version of the complete data analysis backbone. At least, craete the analytical sandboxes, generate simple features, a training and validation datasets and learn a model.
+[Week 13] You should have a definitive version of the data analysis backbone. Refine specially the tasks conducted in the trusted zone (data quality) and feature generation to guarantee the tasks made at each step do not overlap and make sense where they are. Include operations for the data analysis backbone. By this date, you should have a first end-to-end version of the whole project.
+[Week 14] Decide the advanced topic you want to work with. Read the seminal papers required to understand the topic. Sketch a first architectural version about how to include a solution for this topic in your end-to-end system (i.e., in which modules of the backbones would have an impact). 
+[Week 15] You should have a first version of the advanced topic chosen implemented in your end-to-end system.
+[Week 16] Refine your solution to improve lessons learnt with the advanced topic during the previous week.
+You are advised to start documenting as soon as you have things decided. Create the deliverable document in parallel and do not wait until the end. Thus, documentation should be spread all over these milestones. The last weeks should focus on refining and finishing the small details. We strongly advise to plan to get to the Xmas break with a first version of the whole project and leave the Xmas period as contingency plan (unexpected problems, etc.).
+
