@@ -1,0 +1,13 @@
+python-Levenshtein
+fuzzywuzzy
+loguru
+streamlit 
+numpy 
+pandas 
+matplotlib
+seaborn 
+duckdb 
+ruff 
+pydantic 
+pytest 
+tdqm 
