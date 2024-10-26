@@ -1,0 +1,7 @@
+Enllaç de l'aplicació: https://portaldades.ajuntament.barcelona.cat/ca/estad%C3%ADstiques/7i0g4usm60
+Títol: Nombre de contractes de lloguer d'habitatge constituïts
+Unitat: Nombre
+Data de publicació : 2024-07-03T10:51:29Z
+Llicència: CC BY 4.0
+Nota: La informació de districtes i barris està elaborada a partir d'aquells habitatges que s'han pogut geolocalitzar. El total de Barcelona pot no coincidir amb la suma de contractes de lloguer dels districtes o dels barris.No es publica la informació dels àmbits que hi ha menys de sis contractes registrats.
+Tipus Filtre -> Temps: Any; Territori: Comunitat Autònoma, Àmbit funcional territorial, Municipi, Districte, Barri
