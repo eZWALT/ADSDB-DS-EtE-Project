@@ -36,12 +36,11 @@ class FileInfo:
 """
 @dataclass
 class FileInfoManager:
-    directory: str = ""
+    directory: str
     files: Dict[str, FileInfo] = field(default_factory=dict)
 
     def __post_init__(self):
-        if self.directory:
-            self.files = self._load_csv_files(self.directory)
+        self.files = self._load_csv_files(self.directory)
 
     """
     Recursively load all CSV files from the directory and create FileInfo objects.
@@ -111,7 +110,6 @@ class FileInfoManager:
     """
     def add_file(self, file_info: FileInfo):
         self.files[file_info.filename] = file_info
-        loguru.logger.info(f"File '{file_info.filename}' added to FileInfoManager.")
 
     """
     Adds a new FileInfo object to the manager by filepath.
@@ -119,7 +117,6 @@ class FileInfoManager:
     def add_file_by_path(self, filepath: str, df: Optional[pd.DataFrame] = None):
         filename = os.path.basename(filepath)
         self.files[filename] = self._create_file_info(filename, filepath, df)
-        loguru.logger.info(f"File '{filename}' added to FileInfoManager.")
 
     """
     Removes a file from the manager by filename.
@@ -127,9 +124,30 @@ class FileInfoManager:
     def remove_file(self, filename: str):
         if filename in self.files:
             del self.files[filename]
-            loguru.logger.info(f"File '{filename}' removed from FileInfoManager.")
+            loguru.logger.success(f"File '{filename}' removed from FileInfoManager.")
         else:
             loguru.logger.warning(f"Tried to remove '{filename}', but it was not found.")
+
+    """
+    Updates the file paths of each FileInfo in the FileInfoManager using the base path,
+    source, sub-source, and year.
+
+    Filepath format: base_path/source/sub_source/year.csv
+    """
+    def update_filepaths(self, base_path: str):
+      for filename, file_info in self.files.items():
+          if file_info.source and file_info.sub_source and file_info.year:
+              # Construct the new file path
+              new_filepath = os.path.join(base_path, file_info.source, file_info.sub_source, file_info.filename)
+
+              # Update the FileInfo with the new path
+              file_info.filepath = new_filepath
+              loguru.logger.success(f"Updated {filename} -> {new_filepath}")
+          else:
+              loguru.logger.error(f"Skipping {filename}: source/sub_source/year information is missing")
+
+
+
 
     """
     Saves all loaded DataFrames to the specified base path.
@@ -202,7 +220,6 @@ class FileInfoManager:
         for filename, file_info in self.files.items():
             table_name = os.path.splitext(file_info.filename)[0]
             try:
-                loguru.logger.info(f"Creating DuckDB table {table_name} from {file_info.filepath}")
                 connection.execute(f"""
                     CREATE TABLE IF NOT EXISTS {table_name} AS
                     SELECT * FROM read_csv_auto('{file_info.filepath}')
@@ -211,6 +228,37 @@ class FileInfoManager:
             except Exception as e:
                 loguru.logger.error(f"Error creating DuckDB table {table_name}: {e}")
 
+    def create_or_update_duckdb_tables_from_dataframes(self, connection: duckdb.DuckDBPyConnection):
+        for filename, file_info in self.files.items():
+            table_name = os.path.splitext(file_info.filename)[0]
+            if file_info.df is not None:
+                try:
+                    # Register the DataFrame as a temporary table in DuckDB
+                    connection.register(f"temp_{table_name}", file_info.df)
+
+                    # Check if the table exists
+                    table_exists = connection.execute(
+                        f"SELECT COUNT(*) FROM information_schema.tables WHERE table_name = '{table_name}'"
+                    ).fetchone()[0] > 0
+
+                    if table_exists:
+                        # If the table exists, truncate it to avoid duplications
+                        connection.execute(f"TRUNCATE TABLE {table_name}")
+                    else:
+                        # If the table does not exist, create it
+                        connection.execute(f"CREATE TABLE {table_name} AS SELECT * FROM temp_{table_name}")
+
+                    # Insert data from the temporary table into the main table
+                    connection.execute(f"INSERT INTO {table_name} SELECT * FROM temp_{table_name}")
+                    loguru.logger.success(f"Data inserted successfully into table {table_name} from in-memory DataFrame.")
+
+                    # Unregister the temporary table
+                    connection.unregister(f"temp_{table_name}")
+
+                except Exception as e:
+                    loguru.logger.error(f"Error creating or updating DuckDB table {table_name} from DataFrame: {e}")
+            else:
+                loguru.logger.warning(f"No DataFrame loaded for {filename}; skipping table creation.")
 
     """
     Retrieves all tables from DuckDB and returns them as a dictionary of DataFrames.
@@ -224,7 +272,6 @@ class FileInfoManager:
             dataframes = {}
             # Loop through each table and retrieve it as a DataFrame
             for table_name in table_names:
-                loguru.logger.info(f"Retrieving data from DuckDB table '{table_name}'")
                 df = connection.execute(f"SELECT * FROM {table_name}").fetchdf()
                 dataframes[table_name] = df
                 loguru.logger.success(f"Data retrieved from DuckDB table '{table_name}' successfully.")
@@ -242,7 +289,6 @@ class FileInfoManager:
         file_info = self.get_file_info(filename)
         if file_info and file_info.df is not None:
             try:
-                loguru.logger.info(f"Saving DataFrame to DuckDB table {table_name}")
                 connection.register('df_temp', file_info.df)
                 connection.execute(f"CREATE TABLE {table_name} AS SELECT * FROM df_temp")
                 loguru.logger.success(f"DataFrame saved to DuckDB table {table_name} successfully.")
@@ -270,19 +316,12 @@ class FileInfoManager:
                 results.append(file_info)
         return results
 
-
-
-
-
-    ########################
-    ### UPDATE FUNCTIONS ###
-    ########################
+    ### UPDATE FUNCTIONS
 
     def update_dataframe(self, filename: str, new_df: pd.DataFrame):
       file_info = self.files.get(filename)
       if file_info:
           file_info.df = new_df
-          loguru.logger.info(f"DataFrame for file '{filename}' updated successfully.")
       else:
           loguru.logger.error(f"File '{filename}' not found in FileInfoManager.")
 
@@ -295,24 +334,6 @@ class FileInfoManager:
               file_info.sub_source = sub_source
           if year is not None:
               file_info.year = year
-          loguru.logger.info(f"FileInfo for '{filename}' updated successfully.")
       else:
           loguru.logger.error(f"File '{filename}' not found in FileInfoManager.")
 
-    """
-    Updates the file paths of each FileInfo in the FileInfoManager using the base path,
-    source, sub-source, and year.
-
-    Filepath format: base_path/source/sub_source/year.csv
-    """
-    def update_filepaths(self, base_path: str):
-      for filename, file_info in self.files.items():
-          if file_info.source and file_info.sub_source and file_info.year:
-              # Construct the new file path
-              new_filepath = os.path.join(base_path, file_info.source, file_info.sub_source, file_info.filename)
-
-              # Update the FileInfo with the new path
-              file_info.filepath = new_filepath
-              loguru.logger.success(f"Updated {filename} -> {new_filepath}")
-          else:
-              loguru.logger.error(f"Skipping {filename}: source/sub_source/year information is missing")

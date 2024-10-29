@@ -1,7 +1,0 @@
-Enllaç de l'aplicació: https://portaldades.ajuntament.barcelona.cat/ca/estad%C3%ADstiques/b37xv8wcjh
-Títol: Preu mitjà (€) del lloguer d'habitatges
-Unitat: Mitjana
-Data de publicació : 2024-07-03T11:46:23Z
-Llicència: CC BY 4.0
-Nota: La informació de districtes i barris està elaborada a partir d'aquells contractes que s'han pogut geolocalitzar. El total de Barcelona pot no coincidir amb la suma de contractes dels districtes o dels barris. No es publica la informació dels àmbits que hi ha menys de sis contractes registrats.
-Tipus Filtre -> Temps: Trimestre; Territori: Comunitat Autònoma, Àmbit funcional territorial, Municipi, Districte, Barri
