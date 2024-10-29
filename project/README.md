@@ -33,7 +33,7 @@ The project is divided into two main components, or "backbones," in line with ML
 
 ## Usage
 
-You can run this project either by setting up the environment locally or using Docker.
+You can run this project either by setting up the environment locally or using Docker. Moreover monitoring scripts can be found at /monitoring.
 
 ### Local Setup
 

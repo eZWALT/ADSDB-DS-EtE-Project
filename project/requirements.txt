@@ -10,3 +10,4 @@ duckdb
 pydantic 
 pytest 
 ydata-profiling
+psutil
