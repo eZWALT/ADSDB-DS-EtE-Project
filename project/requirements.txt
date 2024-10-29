@@ -7,7 +7,6 @@ pandas
 matplotlib
 seaborn 
 duckdb 
-ruff 
 pydantic 
 pytest 
-tdqm 
+ydata-profiling
