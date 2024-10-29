@@ -50,6 +50,13 @@ docker run -p 8501:8501 adsdb_rocks
 
 This will start the Streamlit UI Web application on http://localhost:8501
 
+## Testing 
+
+Unit testing is still in work in progress phase, but can be executed using the following command from the base /project path. 
+
+```sh
+PYTHONPATH=. pytest tests/
+```
 
 ## Credits
 This project was made by: 
