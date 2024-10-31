@@ -8,7 +8,7 @@ This MLOps project seeks to provide insights into questions familiar to anyone w
 
 Using data sets related to Barcelona's demographics, rental prices, economic indicators, and incomes, this project aims to provide a clear view of the current state of the economy and the cost of living in this marvelous city through data-driven knowledge. These insights will help identify levels of social inequality and explore potential trends.
 
-A key goal of the modeling is to predict the future evolution of incomes and rental prices, to assess how the situation could potentially be with a 10-year outlook. 
+A key goal of the modeling is to predict the future evolution of incomes and rental prices.
 
 ## Structure
 
