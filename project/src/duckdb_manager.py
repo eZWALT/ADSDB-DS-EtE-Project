@@ -81,12 +81,14 @@ class DuckDBManager:
             # Get all existing tables to prevent overwriting
             existing_tables = self.list_tables(con)
 
-            data_source_folders = self.landing_persistent_path.glob('*')
-            if not any(data_source_folders):
+            data_source_folders = list(self.landing_persistent_path.glob('*'))
+
+            if not data_source_folders:
                 raise FileNotFoundError("No data source folders found in the persistent landing zone.")
 
             for data_source_folder in data_source_folders:
                 if not data_source_folder.is_dir():
+                    logger.warning(f"{data_source_folder} is not a directory.")
                     continue
 
                 csv_files = list(data_source_folder.glob('*.csv'))
