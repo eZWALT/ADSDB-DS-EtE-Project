@@ -4,6 +4,7 @@ WORKDIR /app
 
 COPY . .
 
+#Upgrade packages and python dependencies
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     build-essential \
@@ -16,4 +17,8 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+#Execute tests before accessing streamlit
+RUN PYTHONPATH=. pytest tests/ && echo "All tests passed!"
+
+#Deploy web
 ENTRYPOINT ["streamlit", "run", "Home.py"]

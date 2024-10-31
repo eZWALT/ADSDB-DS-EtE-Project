@@ -11,7 +11,7 @@ from src.data_management.data_ingestion import ingestion
 
 # DRIVER CODE FOR THE DATA MANAGEMENT BACKBONE
 # Global settings
-st.set_page_config(page_title="Data Pipeline - Barcelona Housing")
+st.set_page_config(page_title="Data Management - Barcelona Housing")
 zone_avg_duration = [5, 5, 5, 5, 5]  # Estimated duration for each zone in seconds
 
 # Wrapper function to execute ETL tasks with a spinner and ETA display

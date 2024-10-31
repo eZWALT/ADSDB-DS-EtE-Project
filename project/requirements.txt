@@ -1,5 +1,3 @@
-python-Levenshtein
-fuzzywuzzy
 loguru
 streamlit 
 numpy 

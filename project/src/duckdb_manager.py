@@ -23,7 +23,7 @@ class DuckDBManager:
         self.base_path = Path.cwd()
         self.landing_persistent_path = self.base_path / "src" / "data_management" / "landing_zone" / "persistent"
         self.formatted_zone_path = self.base_path / "src" / "data_management" / "formatted_zone"
-        self.db_path = self.formatted_zone_path / "formatted_zone.duckdb"
+        self.formatted_db_path = self.formatted_zone_path / "formatted_zone.duckdb"
         self.trusted_zone_path = self.base_path / "src" / "data_management" / "trusted_zone"
         self.trusted_db_path = self.trusted_zone_path / "trusted_zone.duckdb"
         self.exploitation_zone_path = self.base_path / "src" / "data_management" / "exploitation_zone"
@@ -35,7 +35,7 @@ class DuckDBManager:
         self.trusted_zone_path.mkdir(parents=True, exist_ok=True)
         self.exploitation_zone_path.mkdir(parents=True, exist_ok=True)
 
-    def set_up_duck_db(self):
+    def set_up_formatted_db(self):
         """
         Connects to an existing DuckDB database in the formatted zone directory
         or creates one if it does not exist.
@@ -43,8 +43,8 @@ class DuckDBManager:
         Returns:
             con (duckdb.DuckDBPyConnection): Connection object for the DuckDB database.
         """
-        con = duckdb.connect(str(self.db_path))
-        logger.info(f"Connected to DuckDB database at '{self.db_path}'.")
+        con = duckdb.connect(str(self.formatted_db_path))
+        logger.info(f"Connected to DuckDB database at '{self.formatted_db_path}'.")
         return con
 
     def list_tables(self, con):
@@ -86,6 +86,9 @@ class DuckDBManager:
             if not data_source_folders:
                 raise FileNotFoundError("No data source folders found in the persistent landing zone.")
 
+            # Initialize a flag to track if any CSV files were found
+            csv_found = False
+
             for data_source_folder in data_source_folders:
                 if not data_source_folder.is_dir():
                     logger.warning(f"{data_source_folder} is not a directory.")
@@ -95,6 +98,8 @@ class DuckDBManager:
                 if not csv_files:
                     logger.warning(f"No CSV files found in data source folder '{data_source_folder}'.")
                     continue
+
+                csv_found = True  # Mark that we've found at least one CSV file
 
                 for file_path in csv_files:
                     table_name = file_path.stem
@@ -108,12 +113,17 @@ class DuckDBManager:
                     """)
                     logger.info(f"Table '{table_name}' created successfully from '{file_path}'.")
 
+            # If no CSV files were found at all, raise an error
+            if not csv_found:
+                raise FileNotFoundError("No CSV files found in any data source folders.")
+
         except FileNotFoundError as fnf_error:
             logger.error(fnf_error)
             raise
         except Exception as e:
             logger.error(f"Failed to create tables from CSV files: {e}")
             raise
+
 
     def delete_all_tables(self, con):
         """
@@ -133,7 +143,7 @@ class DuckDBManager:
             logger.error(f"Failed to delete all tables: {e}")
             raise
 
-    def delete_database(self):
+    def delete_formatted(self):
         """
         Deletes the entire DuckDB database file from the formatted zone.
 
@@ -141,11 +151,11 @@ class DuckDBManager:
             FileNotFoundError: If the database file does not exist.
         """
         try:
-            if self.db_path.exists():
-                self.db_path.unlink()
-                logger.info(f"DuckDB database at '{self.db_path}' deleted successfully.")
+            if self.formatted_db_path.exists():
+                self.formatted_db_path.unlink()
+                logger.info(f"DuckDB database at '{self.formatted_db_path}' deleted successfully.")
             else:
-                raise FileNotFoundError(f"DuckDB database at '{self.db_path}' does not exist.")
+                raise FileNotFoundError(f"DuckDB database at '{self.formatted_db_path}' does not exist.")
         except Exception as e:
             logger.error(f"Failed to delete the DuckDB database: {e}")
             raise
@@ -167,7 +177,7 @@ class DuckDBManager:
         """
         Unifies tables from the formatted database into a single table per dataset in the trusted database.
         """
-        con = self.set_up_duck_db()  # Connect to the formatted database
+        con = self.set_up_formatted_db()  # Connect to the formatted database
         trusted_con = self.set_up_trusted_db()  # Connect to the trusted database
 
         table_names = self.list_tables(con)
