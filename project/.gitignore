@@ -1,0 +1,11 @@
+# Ignore Git cache
+.git/
+
+# Ignore Ruff cache
+.ruff_cache/
+
+# Ignore Pytest cache
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
