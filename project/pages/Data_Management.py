@@ -1,6 +1,4 @@
 import streamlit as st
-import pandas as pd
-import time
 from loguru import logger
 from io import StringIO
 
@@ -16,7 +14,7 @@ from src.data_management.data_ingestion import ingestion
 st.set_page_config(page_title="Data Pipeline - Barcelona Housing")
 zone_avg_duration = [5, 5, 5, 5, 5]  # Estimated duration for each zone in seconds
 
-# Function to execute ETL tasks with a spinner and ETA display
+# Wrapper function to execute ETL tasks with a spinner and ETA display
 def execute_zone_with_animation(zone_name, etl_function, log_area, duration=2):
     logger.info(f"Starting {zone_name}.")
     log_area.text(log_capture.getvalue())
@@ -36,8 +34,6 @@ def execute_zone_with_animation(zone_name, etl_function, log_area, duration=2):
 
 def run_pipeline(log_area):
     cols = st.columns(5)
-
-    # Define your ETL functions as a dictionary
     etl_functions = {
         "Ingestion": ingestion.ingestion_driver,
         "Landing": landing.landing_driver,
@@ -65,6 +61,5 @@ if __name__ == "__main__":
     st.subheader("Pipeline Log")
     log_area = st.empty()
 
-    # Main Pipeline Button
     if st.button("Run Entire Pipeline"):
         run_pipeline(log_area)
