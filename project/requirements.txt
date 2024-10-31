@@ -11,3 +11,4 @@ pydantic
 pytest 
 ydata-profiling
 psutil
+pathlib

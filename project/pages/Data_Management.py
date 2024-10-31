@@ -14,23 +14,7 @@ from src.data_management.data_ingestion import ingestion
 # DRIVER CODE FOR THE DATA MANAGEMENT BACKBONE
 # Global settings
 st.set_page_config(page_title="Data Pipeline - Barcelona Housing")
-zone_avg_duration = [3, 5, 7, 5, 3]  # Estimated duration for each zone in seconds
-
-# Define ETL functions
-def ingestion_etl():
-    ingestion.ingestion_driver()
-
-def landing_zone_etl():
-    landing.landing_driver()
-
-def formatted_zone_etl():
-    formatted.formatted_driver()
-
-def trusted_zone_etl():
-    trusted.trusted_driver()
-
-def exploitation_zone_etl():
-    exploitation.exploitation_driver()
+zone_avg_duration = [5, 5, 5, 5, 5]  # Estimated duration for each zone in seconds
 
 # Function to execute ETL tasks with a spinner and ETA display
 def execute_zone_with_animation(zone_name, etl_function, log_area, duration=2):
@@ -41,7 +25,7 @@ def execute_zone_with_animation(zone_name, etl_function, log_area, duration=2):
     with st.spinner(f"Processing... ETA: {duration} seconds"):
         try:
             etl_function()
-            logger.info(f"Completed {zone_name}.")
+            logger.success(f"Completed {zone_name}.")
             log_area.text(log_capture.getvalue())
             st.success(f"{zone_name} completed!")
         except Exception as e:
@@ -50,14 +34,22 @@ def execute_zone_with_animation(zone_name, etl_function, log_area, duration=2):
             st.error(f"Error in {zone_name}")
             st.stop()
 
-# Main pipeline function
 def run_pipeline(log_area):
     cols = st.columns(5)
-    etl_functions = [ingestion_etl, landing_zone_etl, formatted_zone_etl, trusted_zone_etl, exploitation_zone_etl]
 
-    for index, zone_name in enumerate(["Ingestion", "Landing", "Formatted", "Trusted", "Exploitation"]):
+    # Define your ETL functions as a dictionary
+    etl_functions = {
+        "Ingestion": ingestion.ingestion_driver,
+        "Landing": landing.landing_driver,
+        "Formatted": formatted.formatted_driver,
+        "Trusted": trusted.trusted_driver,
+        "Exploitation": exploitation.exploitation_driver
+    }
+
+    for index, (zone_name, function) in enumerate(etl_functions.items()):
         with cols[index]:
-            execute_zone_with_animation(zone_name, etl_functions[index], log_area, duration=zone_avg_duration[index])
+            execute_zone_with_animation(zone_name, function, log_area, duration=zone_avg_duration[index])
+            log_area.text(log_capture.getvalue())
 
     st.success("Pipeline completed successfully!")
 
