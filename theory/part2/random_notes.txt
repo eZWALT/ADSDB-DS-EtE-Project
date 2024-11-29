@@ -1,0 +1,56 @@
+ MODELLING PRO TIPS:
+ - Just train and validate a bunch of random models to get a set of promising models (LR, Naive Bayes, SVM, Random Forest, XGB, NN...)
+ 
+ HyperParameter: initial parameters of the model (Not the w,b)
+ 
+ FINETUNE:
+ 1. Fine-tune hyperparameters (grid search or random search)
+ 2. Ensemble methods (Combine models)
+ 3. Assess the final model(looks at the metrics and make sure it performs well in all categories)
+ 
+ AFTER FINETUNING:
+ 1. Feature selection
+ 2. Explainability
+ 3. Document the ML 
+ 4. Deploy in API ? 
+ 5. Monitor
+ 6. Try to assess future model degradation 
+ 
+
+MAYBE WE NEED TO MODIFY DATA PIPELINE OR ADD NEW ZONES 
+ 
+ 
+ 
+ 
+ ADVANCED TOPICS:
+ 	1. Data Discovery ---> Data lakes are data repositories that contain a lot of information and have 2 characteristics (given that several entities are going to just dump their data without even fricking preprocessing it in any way...): 
+ 		- They are massive and inefficient to query probably 
+ 		- They are heterogeneuos (different formats and different data representations)
+ 		
+ 	Data discovery wants to find possible candidates data sets inside this massive Data lake to be able to perform operations like Union/Join/Fill nulls. Given the humungous size O(n²) algorithms would not perform well, therefore we need to find algorithms to efficiently find possible matching datasets
+ 	
+	2.   Data Augmentation ----> The goal is to generate a mechanism to find/create data that would improve the performance of the model. For tabular data we can just add new columns of joined data sets.
+	
+	One way is feature selection, however modern approaches do not need models nor execution of them. Another interesting approach is generative data augmentation (Synthetic data). 
+ 
+ 
+	3. Feature Selection -----> 
+		1. Filter Statistics methods (Chisq tests between X variables or other inferential methods)(Fast and simple but doesn't improve performance much) 
+		2. Wrapper model training methods (re-trains the model with less features to try to see the impact of each variable) (its better but very slow)
+		3. Embedded methods (During training its really fast and performant, but restricted to a certain kind of models like random forests) 
+		
+	
+	4. Data Quality 
+		We are not operating in a real relational database schema (We need to first define schema and tables and then ingest data, but we are doing the other way around),
+		Denial constraints to ensure data quality...
+		
+	5. Entity Resolution
+		Fuzzy matching 
+		Supervised learning
+		
+		
+CONCLUSION: the easiest advanced topics we could 
+		
+	
+
+
