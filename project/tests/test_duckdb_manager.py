@@ -37,7 +37,7 @@ class TestDuckDBManager(unittest.TestCase):
 
     def test_delete_all_tables(self):
         self.mock_connection.execute.return_value.fetchall.return_value = [('table1',), ('table2',)]
-        self.manager.delete_all_tables(self.mock_connection)
+        self.manager.delete_all_tables(self.mock_connection, "AreYouSeriouslyReadingTests????!?!?!")
         self.mock_connection.execute.assert_any_call("DROP TABLE IF EXISTS table1")
         self.mock_connection.execute.assert_any_call("DROP TABLE IF EXISTS table2")
 

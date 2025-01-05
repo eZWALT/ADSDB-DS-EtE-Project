@@ -119,7 +119,7 @@ st.set_page_config(page_title="Rental Modelling - Barcelona Affordability")
 if __name__ == "__main__":
     st.title("Analytical Backbone 2 - Rental Modelling 🏠")
     with st.expander("Click to see the dashboard overview"):
-        st.write("""This dashboard focuses on predictive analysis and segmentation within Barcelona's rental market...""")
+        st.write("""This dashboard focuses on predictive analysis within Barcelona's rental market""")
 
     # Sidebar for navigation
     st.sidebar.title("Navigation")
