@@ -10,3 +10,10 @@ pytest
 ydata-profiling
 psutil
 pathlib
+folium
+sklearn
+shapely
+geopandas
+joblib
+xgboost
+streamlit_folium

@@ -3,7 +3,6 @@ from loguru import logger
 import pandas as pd
 from sklearn.metrics import mean_squared_error, r2_score
 import joblib
-import numpy as np
 
 # TODO: Parametrize this default value inside a configuration file
 path_to_model = "src/analytical/modeling/rent_forecasting_boosting_model.pkl"

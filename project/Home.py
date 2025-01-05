@@ -1,4 +1,9 @@
 import streamlit as st
+import pandas as pd
+import geopandas as gpd
+import folium 
+import streamlit_folium
+import shapely
 
 # Set page configuration
 st.set_page_config(page_title="Home - Barcelona Affordability", layout="centered")
@@ -21,6 +26,16 @@ st.write("""
 - **Rental_Modelling**: Second backbone, an interactive interface to explore and evaluate the trained model.
 """)
 
+#Plot interactive map
+st.subheader("Barcelona Interactive Map")
+data = pd.read_json("resources/barcelona_barris.json").dropna()
+data['geometry'] = data['geometria_wgs84'].apply(shapely.wkt.loads)
+geo_data = gpd.GeoDataFrame(data, geometry='geometry').dropna()
+geo_data = geo_data[["nom_barri", "geometry"]]
+geojson_data = geo_data.to_json()
+m = folium.Map(location=[41.3784, 2.1922], zoom_start=12)
+folium.GeoJson(geojson_data).add_to(m)
+streamlit_folium.st_folium(m, width=725)
 
 
 # Call to action

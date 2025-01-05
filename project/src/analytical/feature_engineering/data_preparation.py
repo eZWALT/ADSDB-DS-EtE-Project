@@ -1,8 +1,6 @@
 from loguru import logger
 from src.duckdb_manager import DuckDBManager
-
 import pandas as pd
-import numpy as np
 
 
 def normalize_column(df, column, method="min-max"):

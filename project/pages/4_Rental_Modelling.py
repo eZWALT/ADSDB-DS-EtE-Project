@@ -2,11 +2,9 @@
 import streamlit as st
 import pandas as pd
 import joblib
-import shap
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics import mean_squared_error, r2_score
-import numpy as np
 
 from src.duckdb_manager import DuckDBManager
 

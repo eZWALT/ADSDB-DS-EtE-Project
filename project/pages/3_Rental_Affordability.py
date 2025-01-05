@@ -2,8 +2,6 @@ import streamlit as st
 import pandas as pd 
 import geopandas as gpd
 from shapely import wkt
-import folium
-from streamlit_folium import st_folium
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
@@ -15,10 +13,7 @@ from sklearn.preprocessing import StandardScaler
 #Clustering
 from sklearn.cluster import AgglomerativeClustering 
 
-
-
 # Importing necessary custom modules
-from src.barcelona_manager import BarcelonaManager
 from src.duckdb_manager import DuckDBManager
 
 # Set up the page configuration
