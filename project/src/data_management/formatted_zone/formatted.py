@@ -8,7 +8,7 @@ def formatted_driver() -> None:
     # Set up DuckDB
     connection = db_manager.set_up_formatted_db()
     # Ensure the db is empty to proceed with the loading of databases from the landing zone
-    db_manager.delete_all_tables(connection)
+    db_manager.delete_all_tables(connection, "formatted")
     # Create tables from CSV files
     db_manager.create_tables_from_csv(connection)
     # List created tables

@@ -11,7 +11,7 @@ from src.data_management.data_ingestion import ingestion
 
 # DRIVER CODE FOR THE DATA MANAGEMENT BACKBONE
 # Global settings
-st.set_page_config(page_title="Data Management - Barcelona Housing")
+st.set_page_config(page_title="Data Management - Barcelona Affordability")
 zone_avg_duration = [5, 5, 5, 5, 5]  # Estimated duration for each zone in seconds
 
 # Wrapper function to execute ETL tasks with a spinner and ETA display
@@ -33,21 +33,26 @@ def execute_zone_with_animation(zone_name, etl_function, log_area, duration=2):
             st.stop()
 
 def run_pipeline(log_area):
-    cols = st.columns(5)
-    etl_functions = {
-        "Ingestion": ingestion.ingestion_driver,
-        "Landing": landing.landing_driver,
-        "Formatted": formatted.formatted_driver,
-        "Trusted": trusted.trusted_driver,
-        "Exploitation": exploitation.exploitation_driver
-    }
+    etl_functions = [
+        ("Ingestion", ingestion.ingestion_driver),
+        ("Landing", landing.landing_driver),
+        ("Formatted", formatted.formatted_driver),
+        ("Trusted", trusted.trusted_driver),
+        ("Exploitation", exploitation.exploitation_driver),
+    ]
 
-    for index, (zone_name, function) in enumerate(etl_functions.items()):
-        with cols[index]:
-            execute_zone_with_animation(zone_name, function, log_area, duration=zone_avg_duration[index])
-            log_area.text(log_capture.getvalue())
+    # Group zones into rows with a maximum of 3 columns per row
+    max_columns_per_row = 3
+    for i in range(0, len(etl_functions), max_columns_per_row):
+        cols = st.columns(max_columns_per_row)
+
+        # Iterate over each column and corresponding ETL function
+        for j, (zone_name, function) in enumerate(etl_functions[i:i + max_columns_per_row]):
+            with cols[j]:
+                execute_zone_with_animation(zone_name, function, log_area, duration=zone_avg_duration[i + j])
 
     st.success("Pipeline completed successfully!")
+
 
 if __name__ == "__main__":
     # Capture logs in-memory

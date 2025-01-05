@@ -9,3 +9,7 @@ __pycache__/
 *.py[cod]
 .pytest_cache/
 
+# Ignore DuckDB and model
+.pkl
+.duckdb
+

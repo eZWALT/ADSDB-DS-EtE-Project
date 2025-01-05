@@ -5,6 +5,11 @@ import pandas as pd
 import glob
 from loguru import logger
 
+import duckdb
+from pathlib import Path
+import pandas as pd
+from loguru import logger
+
 class DuckDBManager:
     """
     A class to manage a DuckDB database within a specified project directory structure.
@@ -12,40 +17,57 @@ class DuckDBManager:
     def __init__(self):
         """
         Initializes the DuckDBManager with a specified base path.
-
-        Args:
-            path (str): Path of the main project directory.
-
-        Raises:
-            ValueError: If the path does not exist or is not a directory.
         """
 
         self.base_path = Path.cwd()
         self.landing_persistent_path = self.base_path / "src" / "data_management" / "landing_zone" / "persistent"
         self.formatted_zone_path = self.base_path / "src" / "data_management" / "formatted_zone"
-        self.formatted_db_path = self.formatted_zone_path / "formatted_zone.duckdb"
         self.trusted_zone_path = self.base_path / "src" / "data_management" / "trusted_zone"
-        self.trusted_db_path = self.trusted_zone_path / "trusted_zone.duckdb"
         self.exploitation_zone_path = self.base_path / "src" / "data_management" / "exploitation_zone"
+
+        self.analytical_sandbox_path = self.base_path / "src" / "analytical" / "analytical_sandbox"
+        self.feature_generation_path = self.base_path / "src" / "analytical" / "feature_engineering"  
+        self.data_preparation_path = self.base_path / "src" / "analytical" / "feature_engineering" 
+        self.labeling_path = self.base_path / "src" / "analytical" / "feature_engineering"
+        self.train_test_path = self.base_path / "src" / "analytical" / "feature_engineering"
+
+
+        # Initialize all database paths for each zone
+        self.formatted_db_path = self.formatted_zone_path / "formatted_zone.duckdb"
+        self.trusted_db_path = self.trusted_zone_path / "trusted_zone.duckdb"
         self.exploitation_db_path = self.exploitation_zone_path / "exploitation_zone.duckdb"
+        
+        self.analytical_sandbox_db_path = self.analytical_sandbox_path / "analytical_sandbox.duckdb"
+        self.feature_generation_db_path = self.feature_generation_path / "feature_generation.duckdb"
+        self.data_preparation_db_path = self.data_preparation_path / "data_preparation.duckdb"
+        self.labeling_db_path = self.labeling_path / "labeling.duckdb"
+        self.train_test_db_path = self.train_test_path / "train_test.duckdb"
 
         # Create necessary directories
-        self.landing_persistent_path.mkdir(parents=True, exist_ok=True)
         self.formatted_zone_path.mkdir(parents=True, exist_ok=True)
         self.trusted_zone_path.mkdir(parents=True, exist_ok=True)
         self.exploitation_zone_path.mkdir(parents=True, exist_ok=True)
-
-    def set_up_formatted_db(self):
+        self.analytical_sandbox_path.mkdir(parents=True, exist_ok=True)
+        self.feature_generation_path.mkdir(parents=True, exist_ok=True)
+        self.data_preparation_path.mkdir(parents=True, exist_ok=True)
+        self.labeling_path.mkdir(parents=True, exist_ok=True)
+        self.train_test_path.mkdir(parents=True, exist_ok=True)
+        
+    def _connect_to_db(self, db_path: Path):
         """
-        Connects to an existing DuckDB database in the formatted zone directory
-        or creates one if it does not exist.
+        Establishes a connection to a DuckDB database.
+
+        Args:
+            db_path (Path): The path to the DuckDB database file.
 
         Returns:
-            con (duckdb.DuckDBPyConnection): Connection object for the DuckDB database.
+            duckdb.DuckDBPyConnection: The connection object to the database.
         """
-        con = duckdb.connect(str(self.formatted_db_path))
-        logger.info(f"Connected to DuckDB database at '{self.formatted_db_path}'.")
+        con = duckdb.connect(str(db_path))
+        logger.info(f"Connected to DuckDB database: '{db_path.name}'.")
         return con
+
+    # NEW ZONE SETUP FUNCTIONS -------------------------------------------------------
 
     def list_tables(self, con):
         """
@@ -160,19 +182,6 @@ class DuckDBManager:
             logger.error(f"Failed to delete the DuckDB database: {e}")
             raise
 
-    # TRUSTED ZONE FUNCTIONS --------------------------------------------------------------------
-
-    def set_up_trusted_db(self):
-        """
-        Sets up the trusted DuckDB database.
-
-        Returns:
-            trusted_con (duckdb.DuckDBPyConnection): Connection object for the trusted DuckDB database.
-        """
-        trusted_con = duckdb.connect(str(self.trusted_db_path))
-        logger.info(f"Connected to trusted DuckDB database at '{self.trusted_db_path}'.")
-        return trusted_con
-
     def unify_tables_by_dataset(self):
         """
         Unifies tables from the formatted database into a single table per dataset in the trusted database.
@@ -222,30 +231,93 @@ class DuckDBManager:
         finally:
             trusted_con.close()
 
-    # EXPLOITATION ZONE FUNCTIONS ---------------------------------------------
-
+    def set_up_formatted_db(self):
+        return self._connect_to_db(self.formatted_db_path)
+    
+    def set_up_trusted_db(self):
+        return self._connect_to_db(self.trusted_db_path)
+    
     def set_up_exploitation_db(self):
-        """
-        Sets up the exploitation zone DuckDB database.
+        return self._connect_to_db(self.exploitation_db_path)
 
-        Returns:
-            exploitation_db (duckdb.DuckDBPyConnection): Connection object for the exploitation DuckDB database.
-        """
-        exploitation_db = duckdb.connect(str(self.exploitation_db_path))
-        logger.info(f"Connected to exploitation DuckDB database at '{self.exploitation_db_path}'.")
-        return exploitation_db
 
-    def delete_all_exploitation_tables(self):
+    def set_up_analytical_sandbox_db(self):
+        return self._connect_to_db(self.analytical_sandbox_db_path)
+
+    def set_up_feature_generation_db(self):
+        return self._connect_to_db(self.feature_generation_db_path)
+
+    def set_up_data_preparation_db(self):
+        return self._connect_to_db(self.data_preparation_db_path)
+
+    def set_up_labeling_db(self):
+        return self._connect_to_db(self.labeling_db_path)
+
+    def set_up_train_test_db(self):
+        return self._connect_to_db(self.train_test_db_path)
+
+    # GENERALIZED FUNCTION TO TRANSFER ORIGINAL TABLES TO NEW ZONES ---------------------
+
+    def transfer_tables_to_zone(self, source_con, target_con, tables_to_copy):
         """
-        Deletes all tables in the exploitation zone DuckDB database.
+        Transfer tables from the source connection (e.g., formatted, trusted, exploitation) to the target zone (e.g., analytical sandbox).
+
+        Args:
+            source_con (duckdb.DuckDBPyConnection): Source connection to the original database.
+            target_con (duckdb.DuckDBPyConnection): Target connection to the new zone database.
+            tables_to_copy (list): List of table names to copy from source to target zone.
         """
-        exploitation_con = self.set_up_exploitation_db()
+        for table in tables_to_copy:
+            try:
+                # Copy each table to the target zone
+                target_con.execute(f"CREATE TABLE IF NOT EXISTS {table} AS SELECT * FROM {table}")
+                logger.info(f"Table '{table}' transferred from source to target zone.")
+            except Exception as e:
+                logger.error(f"Error transferring table '{table}': {e}")
+
+    # DELETE ALL TABLES FUNCTIONS ------------------------------------------------------
+
+    def delete_all_tables(self, con, db_name):
         try:
-            tables = exploitation_con.execute("SHOW TABLES").fetchall()
+            tables = con.execute("SHOW TABLES").fetchall()
             for table in tables:
                 table_name = table[0]
-                exploitation_con.execute(f"DROP TABLE IF EXISTS {table_name}")
-                logger.info(f"Table '{table_name}' deleted from the exploitation zone.")
-            logger.info("All tables deleted from the exploitation zone.")
-        finally:
-            exploitation_con.close()
+                con.execute(f"DROP TABLE IF EXISTS {table_name}")
+                logger.info(f"Table '{table_name}' deleted from {db_name}.")
+            logger.info(f"All tables deleted from {db_name}.")
+        except Exception as e:
+            logger.error(f"Failed to delete all tables from {db_name}: {e}")
+            raise
+
+    # DELETE ALL TABLES IN EACH ZONE -----------------------------------------------
+
+    def delete_all_exploitation_tables(self):
+        con = self.set_up_exploitation_db()
+        self.delete_all_tables(con, "exploitation")
+        con.close()
+
+
+    def delete_all_analytical_sandbox_tables(self):
+        con = self.set_up_analytical_sandbox_db()
+        self.delete_all_tables(con, "analytical sandbox")
+        con.close()
+
+    def delete_all_feature_generation_tables(self):
+        con = self.set_up_feature_generation_db()
+        self.delete_all_tables(con, "feature generation")
+        con.close()
+
+    def delete_all_data_preparation_tables(self):
+        con = self.set_up_data_preparation_db()
+        self.delete_all_tables(con, "data preparation")
+        con.close()
+
+    def delete_all_labeling_tables(self):
+        con = self.set_up_labeling_db()
+        self.delete_all_tables(con, "labeling")
+        con.close()
+
+    def delete_all_train_test_tables(self):
+        con = self.set_up_train_test_db()
+        self.delete_all_tables(con, "train-test")
+        con.close()
