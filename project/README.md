@@ -21,9 +21,9 @@ The project is divided into two main components, or "backbones," in line with ML
    - **Exploitation**
 
 2. **Analytical Backbone**: This component is where data mining, modeling, and further analysis occur and is divided into a data preparation/feature engineering pipeline and 2 analytical backbones (Unsupervised algorithms+data analysis and logistic regression modelling):
-      -**Analytical Pipeline**
-      -**Backbone 1: Rental Affordability**
-      -**Backbone 2: Rental Modelling**
+      - **Analytical Pipeline**
+      - **Backbone 1: Rental Affordability**
+      - **Backbone 2: Rental Modelling**
 
 ## Tech Stack
 
